@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortis Transportation — AP/AR Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0c1929;
+    --slate: #1a2a3f;
+    --accent: #c8a44e;
+    --accent-light: #e0c97a;
+    --text: #e8e4dc;
+    --text-muted: #8a96a8;
+    --bg: #0f1f33;
+    --card: #152236;
+    --card-border: #1f3350;
+    --danger: #e05555;
+    --success: #4ecb8d;
+    --warning: #e0a83e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  #intro-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: radial-gradient(ellipse at 30% 20%, rgba(200,164,78,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(30,60,100,0.15) 0%, transparent 50%),
+                var(--bg);
+  }
+
+  .intro-card {
+    max-width: 640px;
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: fadeUp 0.6s ease-out;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .intro-card .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 2rem;
+  }
+
+  .intro-card h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .intro-rules {
+    text-align: left;
+    background: rgba(200,164,78,0.05);
+    border: 1px solid rgba(200,164,78,0.12);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .intro-rules p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .intro-rules p:last-child { margin-bottom: 0; }
+  .intro-rules strong { color: var(--accent-light); font-weight: 600; }
+
+  .name-input-group { margin-bottom: 1.2rem; }
+
+  .name-input-group label {
+    display: block;
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+  }
+
+  .name-input-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .name-input-group input:focus { outline: none; border-color: var(--accent); }
+
+  .btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    margin-top: 0.8rem;
+    background: linear-gradient(135deg, var(--accent), #b8943e);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,164,78,0.3); }
+  .btn-start:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  #test-screen { display: none; }
+
+  .test-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,31,51,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0.8rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 1.5rem; }
+
+  .header-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+
+  .progress-info { font-size: 0.85rem; color: var(--text-muted); }
+  .progress-info span { color: var(--text); font-weight: 600; }
+
+  .timer-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    background: rgba(200,164,78,0.08);
+    border: 1px solid rgba(200,164,78,0.15);
+    color: var(--accent-light);
+    transition: all 0.3s;
+  }
+
+  .timer-display.warning { color: var(--warning); background: rgba(224,168,62,0.1); border-color: rgba(224,168,62,0.25); }
+  .timer-display.danger { color: var(--danger); background: rgba(224,85,85,0.1); border-color: rgba(224,85,85,0.25); animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+  .timer-icon { width: 20px; height: 20px; }
+
+  .test-body { max-width: 800px; margin: 0 auto; padding: 2rem; }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+    animation: fadeUp 0.4s ease-out;
+  }
+
+  .question-card.answered { border-color: rgba(78,203,141,0.3); }
+
+  .question-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.2rem; }
+
+  .q-number {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(200,164,78,0.1);
+    border: 1px solid rgba(200,164,78,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; color: var(--accent);
+  }
+
+  .q-badge {
+    display: inline-block; font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.4rem;
+  }
+
+  .q-badge.ap { background: rgba(78,140,203,0.15); color: #6ab0e8; }
+  .q-badge.ar { background: rgba(168,78,203,0.15); color: #c08ae8; }
+  .q-badge.gl { background: rgba(78,203,141,0.15); color: #6ae8a8; }
+
+  .q-text { font-size: 1rem; line-height: 1.65; color: var(--text); }
+
+  .scenario-context {
+    background: rgba(200,164,78,0.04);
+    border-left: 3px solid rgba(200,164,78,0.3);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .options-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer; transition: all 0.15s; text-align: left;
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+    color: var(--text); line-height: 1.5;
+  }
+
+  .option-btn:hover { background: rgba(200,164,78,0.06); border-color: rgba(200,164,78,0.25); }
+  .option-btn.selected { background: rgba(200,164,78,0.1); border-color: var(--accent); }
+
+  .option-letter {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 0.8rem; color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .option-btn.selected .option-letter { background: var(--accent); color: var(--navy); }
+
+  .test-footer { text-align: center; padding: 2rem 0 4rem; }
+
+  .btn-submit {
+    padding: 1rem 3rem;
+    background: linear-gradient(135deg, var(--accent), #b8943e);
+    color: var(--navy); font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    border: none; border-radius: 10px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,164,78,0.3); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .submit-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem; }
+
+  #complete-screen { display: none; }
+
+  .complete-card { max-width: 580px; margin: 0 auto; text-align: center; }
+
+  .complete-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem; font-weight: 400; margin-bottom: 1rem;
+  }
+
+  .complete-card p { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem; }
+
+  .status-message {
+    padding: 1rem 1.5rem; border-radius: 10px; font-size: 0.95rem; margin-bottom: 1.5rem;
+  }
+
+  .status-message.success { background: rgba(78,203,141,0.1); border: 1px solid rgba(78,203,141,0.3); color: var(--success); }
+  .status-message.error { background: rgba(224,85,85,0.1); border: 1px solid rgba(224,85,85,0.3); color: var(--danger); }
+  .status-message.sending { background: rgba(200,164,78,0.1); border: 1px solid rgba(200,164,78,0.3); color: var(--accent-light); }
+
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid var(--accent-light); border-top-color: transparent;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    vertical-align: middle; margin-right: 0.5rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .intro-card { padding: 2rem 1.5rem; }
+    .test-header { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .test-body { padding: 1rem; }
+    .question-card { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="intro-screen">
+  <div class="intro-card">
+    <div class="logo-text">Fortis Transportation</div>
+    <div class="subtitle">Accounts Payable / Accounts Receivable Assessment</div>
+    <h1>Candidate Skills Assessment</h1>
+    <div class="intro-rules">
+      <p><strong>15 scenario-based questions</strong> covering AP, AR, and General Accounting workflows for a US-based company.</p>
+      <p><strong>⏱ 10-minute time limit.</strong> The timer begins the moment you press "Begin Assessment" and cannot be paused. When time expires, your answers are submitted automatically.</p>
+      <p><strong>This assessment is monitored.</strong> Tab switches, window changes, and copy/paste activity are logged and reported. Please work independently.</p>
+      <p><strong>All questions are multiple choice.</strong> Select the single best answer for each. Unanswered questions are scored as incorrect.</p>
+    </div>
+    <div class="name-input-group">
+      <label for="candidateName">Full Name (as it appears on your application)</label>
+      <input type="text" id="candidateName" placeholder="Enter your full name" autocomplete="off">
+    </div>
+    <div class="name-input-group">
+      <label for="candidateEmail">Email Address</label>
+      <input type="email" id="candidateEmail" placeholder="Enter your email address" autocomplete="off">
+    </div>
+    <button class="btn-start" id="startBtn" disabled onclick="startTest()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      Begin Assessment
+    </button>
+  </div>
+</div>
+
+<div id="test-screen">
+  <div class="test-header">
+    <div class="header-left">
+      <div class="header-logo">Fortis</div>
+      <div class="progress-info">Question <span id="answeredCount">0</span> of <span>15</span> answered</div>
+    </div>
+    <div class="timer-display" id="timerDisplay">
+      <svg class="timer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="timerText">10:00</span>
+    </div>
+  </div>
+  <div class="test-body" id="questionsContainer"></div>
+  <div class="test-footer">
+    <button class="btn-submit" id="submitBtn" onclick="submitTest()">Submit Assessment</button>
+    <div class="submit-note">You can submit early, or it will auto-submit when time expires.</div>
+  </div>
+</div>
+
+<div id="complete-screen">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;">
+    <div class="complete-card" style="animation:fadeUp 0.6s ease-out;">
+      <div class="logo-text" style="margin-bottom:2rem;">Fortis Transportation</div>
+      <h2>Assessment Complete</h2>
+      <div id="statusMessage" class="status-message sending">
+        <span class="spinner"></span> Submitting your results...
+      </div>
+      <p>Thank you for completing the AP/AR skills assessment. Our hiring team will review your results and be in touch.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const TIME_LIMIT_SECONDS = 600;
+const _k = [24,27,24,24,24,27,30,24,24,21,21,21,21,24,27];
+function _d(v) { return (v / 3) - 7; }
+
+const questions = [
+  { id:1, category:"ap", categoryLabel:"Accounts Payable",
+    scenario:"You receive an invoice from a vendor for $12,400. The PO states $11,800 and goods received note confirms full delivery. The vendor says the extra $600 is a fuel surcharge they added after the PO was issued.",
+    question:"What is the correct FIRST action?",
+    options:["Pay $11,800 and short-pay the invoice with a note to the vendor","Put the invoice on hold, contact the requestor/buyer to verify if the surcharge was agreed upon, and request supporting documentation","Pay the full $12,400 since the goods were received in full","Reject the invoice entirely and send it back to the vendor"]},
+  { id:2, category:"ap", categoryLabel:"Accounts Payable",
+    scenario:"During your monthly vendor statement reconciliation, you discover that a payment of $8,500 was applied to Vendor A's account, but Vendor A says they never received it. Your bank confirms the ACH payment cleared.",
+    question:"What is the most likely issue and what should you check first?",
+    options:["The payment was returned — check for a reversal entry in the bank","The bank made an error — contact the bank to request a trace","The payment may have been sent with incorrect banking details — pull the ACH trace number and verify it was routed to Vendor A's correct account","Reissue the payment immediately to maintain the vendor relationship"]},
+  { id:3, category:"ap", categoryLabel:"Accounts Payable",
+    scenario:"A US-based independent contractor invoices you for $4,200 in December. You have not yet collected a W-9 from them. Your company's fiscal year ends December 31, and the AP aging report is due to close.",
+    question:"How should you handle this?",
+    options:["Pay the invoice now and collect the W-9 later — the year-end close is the priority","Accrue the $4,200 as a liability for year-end, but place the payment on hold and begin backup withholding at 24% until the W-9 is received","Delete the invoice from the system until the W-9 is received","Pay the invoice and withhold 30% for tax purposes"]},
+  { id:4, category:"ap", categoryLabel:"Accounts Payable",
+    scenario:"You process approximately 1,500 invoices per month. You notice that 12 invoices from the same vendor in the last quarter have amounts ending in round numbers ($5,000, $3,000, $7,000) with vague descriptions like 'consulting services' and no PO references.",
+    question:"What should this pattern trigger?",
+    options:["Nothing unusual — many vendors use round-number billing for retainer agreements","Flag for potential fraud investigation — the pattern of round amounts, vague descriptions, and missing POs are red flags that warrant review of vendor setup documentation and approval chain","Simply request POs going forward and process the existing ones","Reject all 12 invoices and stop doing business with the vendor"]},
+  { id:5, category:"ap", categoryLabel:"Accounts Payable",
+    scenario:"A vendor offers 2/10 Net 30 terms. The invoice amount is $25,000 and arrived today. Your company currently has the cash available but the CFO has a policy of reviewing all payments over $20,000.",
+    question:"What is the cost of missing the early payment discount, and what should you do?",
+    options:["The discount is $500 — process the payment immediately since the company has cash, and inform the CFO afterward","The discount is $500 — escalate to the CFO immediately with a note that the 10-day discount window requires prompt approval, quantifying the $500 savings","The discount is $250 — wait for the normal payment cycle since the CFO review is company policy","The discount is $750 — flag it for the next AP batch run"]},
+  { id:6, category:"ar", categoryLabel:"Accounts Receivable",
+    scenario:"A long-standing client's account has moved from current to 60 days past due over the last two billing cycles. They are a top-10 revenue client. Your standard process sends an automated past-due notice at 30 days and a collections call at 60 days.",
+    question:"What is the most appropriate next step?",
+    options:["Follow standard procedure — send the automated 60-day notice and make the collections call","Skip the collections process entirely since they're a top client — just wait","Before making the standard collections call, coordinate with the account manager/sales team to understand if there are relationship issues, disputes, or known cash flow concerns, then approach the client collaboratively","Immediately escalate to a collections agency to protect the receivable"]},
+  { id:7, category:"ar", categoryLabel:"Accounts Receivable",
+    scenario:"You receive a payment of $15,750 from a client via wire transfer. The client has three outstanding invoices: #1001 for $8,200, #1002 for $5,400, and #1003 for $6,900. The remittance advice references only 'October services.'",
+    question:"How should you apply the cash?",
+    options:["Apply to the oldest invoice first (#1001 = $8,200), then the remainder ($7,550) to #1002, leaving #1002 with a $2,150 balance and #1003 fully open","Split the payment equally across all three invoices","Apply the full amount to #1001 and #1002 combined ($13,600) and the remaining $2,150 to #1003, since this matches 'October' timing","Place the payment in unapplied cash and contact the client for specific application instructions, since the remittance is ambiguous and assumptions could cause reconciliation issues"]},
+  { id:8, category:"ar", categoryLabel:"Accounts Receivable",
+    scenario:"You are running the monthly AR aging report and notice that a $45,000 invoice to a client is 90+ days overdue. The client's credit limit is $50,000 and they just placed a new order for $35,000.",
+    question:"What should you do?",
+    options:["Process the new order since it's within their credit limit","Place a hold on the new order, notify sales, and require either payment of the overdue $45,000 or management approval before releasing the new order — the effective exposure would be $80,000 against a $50,000 limit","Increase the credit limit to $85,000 to accommodate both","Process the new order but flag the account for review next month"]},
+  { id:9, category:"ar", categoryLabel:"Accounts Receivable",
+    scenario:"A client takes a 2% early payment discount on a $10,000 invoice, paying $9,800. However, the payment was received on day 18, and your terms specify 2/10 Net 30.",
+    question:"How should this be handled?",
+    options:["Accept the $9,800 — it's close enough and not worth the client relationship damage","Post the $9,800 payment against the invoice, leaving a $200 balance. Contact the client explaining the discount was taken outside the discount window and request payment of the $200 remaining balance","Reject the payment entirely and ask for the full $10,000","Write off the $200 as a bad debt expense"]},
+  { id:10, category:"ar", categoryLabel:"Accounts Receivable",
+    scenario:"At month-end, your AR aging report shows total receivables of $1,200,000. Your current allowance for doubtful accounts is $18,000. The aging breakdown is: Current $800,000, 1-30 days $200,000, 31-60 days $120,000, 61-90 days $50,000, 90+ days $30,000.",
+    question:"Using standard historical percentages (0.5% current, 2% for 1-30, 5% for 31-60, 15% for 61-90, 40% for 90+ days), what adjustment is needed?",
+    options:["Increase the allowance by $8,500 (required allowance is $26,500)","Decrease the allowance by $2,000 (the account is over-reserved)","Increase the allowance by $4,500 (required allowance is $22,500)","No adjustment needed — $18,000 is adequate"]},
+  { id:11, category:"gl", categoryLabel:"General Accounting",
+    scenario:"During the bank reconciliation for November, you find that the company's book balance is $142,300 and the bank statement balance is $148,750. You identify the following: outstanding checks totaling $9,200, a deposit in transit of $4,500, a bank service charge of $150 not yet recorded, and NSF check of $1,600 received from a customer.",
+    question:"What is the adjusted book balance?",
+    options:["$140,550","$144,050","$142,150","$140,250"]},
+  { id:12, category:"gl", categoryLabel:"General Accounting",
+    scenario:"Your company prepaid $36,000 for a 12-month insurance policy effective September 1. It is now December 31, and you are preparing year-end adjusting entries.",
+    question:"What is the correct adjusting journal entry?",
+    options:["Debit Insurance Expense $12,000, Credit Prepaid Insurance $12,000","Debit Insurance Expense $36,000, Credit Prepaid Insurance $36,000","Debit Insurance Expense $9,000, Credit Prepaid Insurance $9,000","Debit Prepaid Insurance $12,000, Credit Insurance Expense $12,000"]},
+  { id:13, category:"gl", categoryLabel:"General Accounting",
+    scenario:"You are closing the books for the month. While reviewing journal entries, you find that a $22,000 payment for equipment was debited to Office Supplies Expense by a junior clerk.",
+    question:"What is the impact of this error if left uncorrected, and what is the correcting entry?",
+    options:["Expenses are overstated and assets are understated — Debit Equipment $22,000, Credit Office Supplies Expense $22,000","Expenses are understated and assets are overstated — Debit Office Supplies Expense $22,000, Credit Equipment $22,000","Only the balance sheet is affected — Debit Equipment $22,000, Credit Cash $22,000","No net impact since both are expense accounts"]},
+  { id:14, category:"gl", categoryLabel:"General Accounting",
+    scenario:"You are reconciling the intercompany accounts between your US entity and the India subsidiary at month-end. The US books show a $75,000 receivable from India, but India's books show only a $68,000 payable to the US.",
+    question:"What is the most likely cause and proper resolution process?",
+    options:["Foreign exchange fluctuation — simply adjust the US books to $68,000 using the current exchange rate","One entity likely recorded a transaction the other hasn't yet — compare transaction listings between entities for the period, identify the $7,000 gap (possibly a late invoice or unrecorded charge), and ensure both entities record consistently before eliminating in consolidation","Write off the $7,000 difference as an intercompany loss","Adjust the India books to $75,000 since the US entity is the parent"]},
+  { id:15, category:"gl", categoryLabel:"General Accounting",
+    scenario:"Your CFO asks you to prepare the month-end accruals. You know that: (1) Employees earned $85,000 in wages for the last week of the month, to be paid next month; (2) The company received a $6,000 utility bill dated the 28th that hasn't been entered; (3) A client paid $20,000 upfront for services to be delivered over the next 4 months.",
+    question:"What is the total amount that should be recorded as current liabilities in accrual entries?",
+    options:["$91,000 — the wages and utility bill only","$111,000 — wages, utility bill, and full client prepayment","$96,000 — wages, utility bill, and one month of the client prepayment","$85,000 — only the wage accrual since the utility bill is an AP entry, not an accrual"]}
+];
+
+let tabSwitchCount = 0, copyAttempts = 0, testStartTime = null, testEndTime = null;
+let answers = {}, timerInterval = null, secondsRemaining = TIME_LIMIT_SECONDS, submitted = false;
+
+document.addEventListener('visibilitychange', () => { if (document.hidden && testStartTime && !testEndTime) tabSwitchCount++; });
+document.addEventListener('copy', (e) => { if (testStartTime && !testEndTime) { copyAttempts++; e.preventDefault(); } });
+document.addEventListener('contextmenu', (e) => { if (testStartTime && !testEndTime) e.preventDefault(); });
+
+const nameInput = document.getElementById('candidateName');
+const emailInput = document.getElementById('candidateEmail');
+const startBtn = document.getElementById('startBtn');
+
+function checkFields() { startBtn.disabled = !(nameInput.value.trim() && emailInput.value.trim()); }
+nameInput.addEventListener('input', checkFields);
+emailInput.addEventListener('input', checkFields);
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  const shuffled = questions.map(q => {
+    const indices = q.options.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return { ...q, shuffledIndices: indices };
+  });
+  window._shuffled = shuffled;
+  container.innerHTML = shuffled.map(q => `
+    <div class="question-card" id="qcard-${q.id}">
+      <div class="question-header">
+        <div class="q-number">${q.id}</div>
+        <div>
+          <div class="q-badge ${q.category}">${q.categoryLabel}</div>
+          <div class="q-text">${q.question}</div>
+        </div>
+      </div>
+      ${q.scenario ? `<div class="scenario-context">${q.scenario}</div>` : ''}
+      <div class="options-list">
+        ${q.shuffledIndices.map((origIdx, displayIdx) => `
+          <button class="option-btn" data-question="${q.id}" data-answer="${displayIdx}" onclick="selectAnswer(${q.id}, ${displayIdx})">
+            <span class="option-letter">${String.fromCharCode(65 + displayIdx)}</span>
+            <span>${q.options[origIdx]}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectAnswer(qId, ansIdx) {
+  answers[qId] = ansIdx;
+  document.querySelectorAll(`[data-question="${qId}"]`).forEach(btn => btn.classList.remove('selected'));
+  document.querySelector(`[data-question="${qId}"][data-answer="${ansIdx}"]`).classList.add('selected');
+  document.getElementById(`qcard-${qId}`).classList.add('answered');
+  document.getElementById('answeredCount').textContent = Object.keys(answers).length;
+}
+
+function updateTimer() {
+  secondsRemaining--;
+  const mins = Math.floor(secondsRemaining / 60);
+  const secs = secondsRemaining % 60;
+  document.getElementById('timerText').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+  const display = document.getElementById('timerDisplay');
+  if (secondsRemaining <= 60) display.className = 'timer-display danger';
+  else if (secondsRemaining <= 180) display.className = 'timer-display warning';
+  if (secondsRemaining <= 0) submitTest(true);
+}
+
+function startTest() {
+  testStartTime = new Date();
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('test-screen').style.display = 'block';
+  renderQuestions();
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+async function submitTest(autoSubmit = false) {
+  if (submitted) return;
+  if (!autoSubmit) {
+    const unanswered = 15 - Object.keys(answers).length;
+    if (unanswered > 0 && !confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  }
+  submitted = true;
+  clearInterval(timerInterval);
+  testEndTime = new Date();
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('test-screen').style.display = 'none';
+  document.getElementById('complete-screen').style.display = 'block';
+
+  const elapsed = Math.round((testEndTime - testStartTime) / 1000);
+  const elapsedMins = Math.floor(elapsed / 60);
+  const elapsedSecs = elapsed % 60;
+
+  let correct = 0, apCorrect = 0, arCorrect = 0, glCorrect = 0;
+  const detailLines = [];
+
+  window._shuffled.forEach((q, idx) => {
+    const userDisplayAnswer = answers[q.id];
+    const correctOrigIdx = _d(_k[idx]);
+    const correctDisplayIdx = q.shuffledIndices.indexOf(correctOrigIdx);
+    const isCorrect = userDisplayAnswer === correctDisplayIdx;
+    const wasAnswered = userDisplayAnswer !== undefined;
+    if (isCorrect) {
+      correct++;
+      if (q.category === 'ap') apCorrect++;
+      if (q.category === 'ar') arCorrect++;
+      if (q.category === 'gl') glCorrect++;
+    }
+    detailLines.push(`Q${q.id} (${q.categoryLabel}): ${!wasAnswered ? 'NOT ANSWERED' : isCorrect ? 'CORRECT' : 'INCORRECT'}`);
+  });
+
+  const pct = Math.round((correct / 15) * 100);
+  const candidateName = nameInput.value.trim();
+  const candidateEmail = emailInput.value.trim();
+
+  let rec;
+  if (pct >= 80) rec = 'Schedule phone interview';
+  else if (pct >= 60) rec = 'Review before scheduling';
+  else rec = 'Does not meet minimum threshold';
+
+  const msg =
+`FORTIS TRANSPORTATION - AP/AR CLERK ASSESSMENT RESULTS
+
+CANDIDATE: ${candidateName}
+EMAIL: ${candidateEmail}
+DATE: ${testStartTime.toLocaleDateString()} at ${testStartTime.toLocaleTimeString()}
+
+SCORE: ${correct}/15 (${pct}%)
+AP: ${apCorrect}/5 | AR: ${arCorrect}/5 | GL: ${glCorrect}/5
+
+TIME: ${elapsedMins}m ${elapsedSecs}s${autoSubmit ? ' (AUTO-SUBMITTED)' : ''}
+TAB SWITCHES: ${tabSwitchCount}${tabSwitchCount > 2 ? ' *** HIGH ***' : ''}
+COPY ATTEMPTS: ${copyAttempts}${copyAttempts > 0 ? ' ***' : ''}
+UNANSWERED: ${15 - Object.keys(answers).length}
+
+DETAIL:
+${detailLines.join('\n')}
+
+RECOMMENDATION: ${rec}`;
+
+  const statusEl = document.getElementById('statusMessage');
+
+  try {
+    const payload = {
+      candidateName, candidateEmail,
+      score: correct, total: 15, percentage: pct,
+      apScore: apCorrect, arScore: arCorrect, glScore: glCorrect,
+      timeUsed: `${elapsedMins}m ${elapsedSecs}s`,
+      autoSubmitted: autoSubmit,
+      tabSwitches: tabSwitchCount,
+      copyAttempts,
+      unanswered: 15 - Object.keys(answers).length,
+      detail: window._shuffled.map((q, idx) => {
+        const correctOrigIdx = _d(_k[idx]);
+        const correctDisplayIdx = q.shuffledIndices.indexOf(correctOrigIdx);
+        return {
+          id: q.id,
+          category: q.categoryLabel,
+          correct: answers[q.id] === correctDisplayIdx,
+          answered: answers[q.id] !== undefined
+        };
+      }),
+      testDate: testStartTime.toLocaleString()
+    };
+
+    // Use hidden iframe + form POST to bypass CORS restrictions from file://
+    const iframe = document.createElement('iframe');
+    iframe.name = 'submitFrame';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://script.google.com/a/macros/fortis.co/s/AKfycbyzVe9O96N1PZEK1JnCee6nPgeeUsWmoCNnaY4yKsdHx-zd0DMvFviWX5i2N5krZV6oyg/exec';
+    form.target = 'submitFrame';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'payload';
+    input.value = JSON.stringify(payload);
+    form.appendChild(input);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Give it a moment then show success
+    setTimeout(() => {
+      statusEl.className = 'status-message success';
+      statusEl.innerHTML = '✅ Your results have been submitted successfully. Our hiring team has been notified.';
+    }, 2000);
+  } catch (e) {
+    statusEl.className = 'status-message error';
+    statusEl.innerHTML = '❌ There was an issue submitting results. Please email <strong>bill.kennedy@fortis.co</strong> to let them know you completed the assessment.';
+  }
+}
+</script>
+</body>
+</html>
